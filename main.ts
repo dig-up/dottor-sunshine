@@ -1,0 +1,208 @@
+scene.onOverlapTile(SpriteKind.Player, sprites.builtin.forestTiles0, function (sprite, location) {
+    game.gameOver(true)
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (dottore.vy == 0) {
+        dottore.vy = -200
+        music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.UntilDone)
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`miaTessera`, function (sprite, location) {
+    game.gameOver(false)
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`miaTessera0`, function (sprite, location) {
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    if (game.ask("vuoi un punto?")) {
+        info.changeScoreBy(10)
+    } else {
+        info.changeScoreBy(-1)
+    }
+    myEnemy.follow(dottore)
+    game.showLongText("\"SEI SPACCIATO DOC!\"", DialogLayout.Bottom)
+})
+let myEnemy: Sprite = null
+let dottore: Sprite = null
+scene.setBackgroundColor(3)
+scene.setBackgroundImage(img`
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999999111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+    9999999999999999999991111119999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999911999999999999999
+    9999999999991111111111111111111111111111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991111111111111111111199999999999
+    9999999991111111111111111111111111111111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111119999999
+    9999999991111111111111111111111111111111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111999999
+    9999999911111111111111111111111111111119999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111999999
+    9999999111111111111111111111111111111199999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111999999
+    9999999111111111111111111111111111111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111999999
+    9999999111111111111111111111111111119999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111999999
+    9999999111111111111111111111111111199999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999911111111111111111111111111999999
+    9999999991111111111111111111111999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991111111111111111111111999999
+    9999999999111111111111111111999999999999999999999999999999999999999999999991119999999999999999999999999999999999999999999999999999999911111111111111111199999999
+    9999999999999111111111111119999999999999999999999999999999999999999999999911111199999999999999999999999999999999999999999999999999999999111111111119999999999999
+    9999999999999991111111119999999999999999999999999999999999999999999999911111111111111199999999999999999999999999999999999999999999bbbbbb999999999999999999999999
+    999999999999999991111199999999999999999999999999999999999999999999999911111111111111111111111119999999999999bbbbbbb999999999999999bbbbbb9999bbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999999991111111111111111111111111119999999999999bbbbbbb9999bbbbbbb9999bbbbbb9999bbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999919111111111111111111111111111119999999999999bbbbbbb9999bbbbbbb9999bbbbbb9999bbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111111119999999999999bbbbbbb9999bbbbbbb9999bbbbbb9999bbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111111119999999999999bbbbbbb9999bbbbbbb9999bbbbbb9999bbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111111119999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111111199999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999111111111111111111111111111111199999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999911111111111111111111111111111999999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999991111111111111111111111111111999999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999
+    999999999999999999999999999999999999999999999999999999999999999999111111111111111111111111199999999999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999
+    99999999999999999999999999999999999999999999999999999999999999999991111111111111111111111bbbb999bbbb99999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999
+    999999999999999999bbbbb9999999999999999999999999999999999999999999999999999999999bbbb9999bbbb999bbbb99bb9999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999
+    999999999999999999bbbbb9999bbbb99999bbbbbb999999999999999999999999999999999999999bbbb9999bbbb999bbbb99bb9999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999
+    999999999999999999bbbbb9999bbbb99999bbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999dddddddbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb9999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb9999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb9999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbb99999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999bbbbbbbbbbbbbbbbbbbbbbbb99999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbbbbbb99999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bbbbbbbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bbdddddbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bdddddddbbbbbbbbbbb99999999999dddddbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bdddddddbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bdddddddbbbbbbbbbbb99999999999bbbbbbbbbbbdddddddddbbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bdddddddbbbbbbbbbbb99999999999bbbbbbbbbbdddddddddddbbbbbbbbbbb99999999999999999
+    999999999999999999999bbbbbdddddbbbbbbbb999999999999999999999999999999999999999999bdddddddbbbbbbbbbbb99999999999bbbbbbbbbdddddddddddddbbbbbbbbbb999999999999b99bb
+    999999999999999999999bbbbdddddddbbbbbbb999999999999999999999999999999999999999999bbdddddbbbbbbbbbbbb99999999999bbbbbbbbdddddddddddddddbbbbbbbbb99999999999bb99bb
+    999999999999999999999bbbbdddddddbbbbbbb999999999999999999999999999999999999999999bbbbbbbbbbdddddddbb99999999999bbbbbbbdddddddddddddddddbbbbbbbb99999999999bb99bb
+    999999999999999999999bbbbdddddddbbbbbbb999999999999999999999999999999999999999999bbbbbbbbbdddddddddb99999999999bbbbbbbdddddddddddddddddbbbbbbbb99999999999bbbbbb
+    999999999999999999999bbbbdddddddbbbbbbb999999999999999999999999999999999999999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb99999999999bbbbbb
+    999999999999999999999bbbbdddddddbbbbbbb999999999999999999999999999999999999999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb99999999999bbbbbb
+    999999999999999999999bbbbbdddddbbbbbbbb999999999999999999999999999999999999999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb99999999999bbbbbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999999999999999999999999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999bb999bb999bb99bb99999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb999999999999999999bb999bb999bb99bb99999999bbbbbbbbddddddddddd99999999999bbbbbbbdddddddddddddddddbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddbbbbbbbbb999999999999999999bbbbbbbbbbbbbbbb99999999bbbbbbbbbdddddddddb99999999999bbbbbbbbdddddddddddddddbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbdddddddbbbbbbbb999999999999999999bbbbbbbbbbbbbbbb99999999bbbbbbbbbbdddddddbb99999999999bbbbbbbbbdddddddddddddbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbdddddddbbbbbbbb999999999999999999bbbbbbbbbbbbbbbb99999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbdddddddddddbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbdddddddbbbbbbbb999999999999999999bbbbbbbbbbbbbbb999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbdddddddddbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbdddddddbbbbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb9999999999dddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbdddddddbbbbbbbb9999999999999999999bbbbbbbbbbbb9999999999ddddddbbbbbbbbbbbbbb99999999999ddddbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddbbbbbbbbb9999999999999999999bbbbdddbbbbb99999999d99ddddddbbbbbbbbbbbbb99999999999dddddbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbd
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbbdddbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999dddddbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbd
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbbdddbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbd
+    999999999999999999999bbbbbbbdddddbbbbbb9999999999999999999bbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbbbdddddddbbbbb9999999999999bbbb
+    999999999999999999999bbbbbbdddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbbdddddddddbbbb9999999999999bbbb
+    999999999999999999999bbbbbbdddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbdddddddddddbbb9999999999999bbbb
+    999999999999999999999bbbbbbdddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbdddddddddddddbb9999999999999bbbb
+    999999999999999999999bbbbbbdddddddbbbbb9999999999999999999bbbbbbdddbbb99999999999dddddbbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbdddddddddddddbb9999999999999bbbb
+    999999999999999999999bbbbbbdddddddbbbbb9999999999999999999bbbbbbdbdbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999ddddddbbbbbbbbbbbdddddddddddddbb9999999999999bbbb
+    999999999999999999999bbbbbbbdddddbbbbbb9999999999999999999bbbbbbdddbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999dddddbbbbbbbbbbbbdddddddddddddbb9999999999999bbbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999dddddbbbbbbbbbbbbdddddddddddddbb9999999999999ddbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbdddbbbbb99999999999ddddbbbbbbbbbbbbbdddddddddddddbb9999999999999ddbb
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbdddbbbbb99999999999ddbbbbbbbbbbbbbbbdddddddddddddbb9999999999999dddb
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbdddbbbbbb99999999999bbbbbbbbbbbdddbbbbb99999999999bbbbbbbbbbbbbbbbbbdddddddddddbbb9999999999999dddb
+    999999999999999999999bbbbbbbbbbbbbbbbbb9999999999999999999bbbdbdbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbdddddddddbbbb9999999999999dddb
+    999999999999999999999bbbbbdddddddbbbbbb9999999999999999999bbbdddbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbdddddddbbbbb9999999999999ddbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999ddbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbdddbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999ddbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbdbdbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbdddbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbdddddddddbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    999999999999999999999bbbbbdddddddbbbbbb9999999999999999999bbbbbbbbbbbb99999999999bbbbbbbbbbbbbbbbbbb99999ccccccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb9999999999999bbbb
+    99bbccccccccccccccccccccbbbbbbbbbbbbbccccccccbbbbbbbccccccccbbbbbbbcccccccccccccccbbbbbbbbbbbbbbbbbbccccccbbbbccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccbbb
+    cccccbbbbbbbbbbbbbbbbbbccbbbbbbcccccccbbbbbbcccccccccbbbbbbbccccccccbbbbbbbbbbbbbccbbbbbbbbbbbbbbbbccbbbbbbbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbbbbbbbcccb
+    bbbbbbbbbbbbbbbbbbbbbbbbbccccccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccbbbbbbbbbbbbccccbbbbbbbbbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccbbbbbbbbbbbbcc
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbbbbbccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbbbbbbbbbbbbbbbbbbbbcccccccbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbbbbbbbbbbcccccccccbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    `)
+dottore = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . 1 1 1 1 . . . . . 
+    . . . . . . 1 1 1 2 1 1 . . . . 
+    . . . . . 1 1 1 2 2 2 1 1 . . . 
+    . . . . . 1 1 1 1 2 1 1 1 . . . 
+    . . . . . 1 1 1 1 1 1 1 1 . . . 
+    . . . . . . 3 3 6 3 3 6 . . . . 
+    . . . . . . 3 3 3 3 3 3 . . . . 
+    . . . 1 1 1 9 1 1 1 9 1 1 1 . . 
+    . . 1 1 . 1 1 9 1 9 1 1 . 1 1 . 
+    . . 1 1 . 1 1 1 9 1 1 1 . 1 1 . 
+    . . 1 1 . b b b 5 b b b . 1 1 . 
+    . . 3 3 . . 1 . . . 1 . . 3 3 . 
+    . . . . . . 1 . . . 1 . . . . . 
+    `, SpriteKind.Player)
+myEnemy = sprites.create(img`
+    . . . . . . . e c 7 . . . . . . 
+    . . . . e e e c 7 7 e e . . . . 
+    . . c e e e e c 7 e 2 2 e e . . 
+    . c e e e e e c 6 e e 2 2 2 e . 
+    . c e e e 2 e c c 2 4 5 4 2 e . 
+    c e e e 2 2 2 2 2 2 4 5 5 2 2 e 
+    c e e 2 2 2 2 2 2 2 2 4 4 2 2 e 
+    c e e 2 2 f f f 2 f f f 2 2 2 e 
+    c e e 2 2 f f f 2 f f f 2 2 2 e 
+    c e e 2 2 2 f f 2 2 f f 2 2 2 e 
+    c e e 2 f 2 2 2 2 2 2 2 f 4 2 e 
+    . e e e f f 2 f 2 f 2 f f 4 e . 
+    . 2 e e 2 f f f f f f f 4 2 e . 
+    . . 2 e e 2 2 2 2 2 4 4 2 e . . 
+    . . . 2 2 e e 4 4 4 2 e e . . . 
+    . . . . . 2 2 e e e e . . . . . 
+    `, SpriteKind.Player)
+controller.moveSprite(dottore, 200, 0)
+dottore.setPosition(19, 19)
+tiles.setCurrentTilemap(tilemap`livello1`)
+scene.cameraFollowSprite(dottore)
+game.setDialogFrame(img`
+    5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 4 5 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 4 5 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 4 5 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 5 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 4 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    5 5 4 4 4 4 4 4 4 4 4 4 4 5 . 
+    . 5 5 4 4 4 4 4 4 4 4 4 4 5 . 
+    . . . 5 5 5 5 5 4 4 4 4 4 5 . 
+    . . . . . . . 5 5 5 5 5 5 5 . 
+    `)
+game.showLongText("questo è un testo incredibilmente lungo e non so come appaia", DialogLayout.Bottom)
+game.onUpdate(function () {
+    dottore.ay = 500
+})
